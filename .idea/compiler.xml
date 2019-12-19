@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="lib-common" target="1.5" />
+      <module name="lib-common" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
