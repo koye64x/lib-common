@@ -2,6 +2,7 @@ package koye.lib.expression;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static koye.lib.expression.OPTION.IGNORE_CASE;
 
@@ -9,12 +10,14 @@ public abstract class InExpression<T> extends BooleanExpression {
 
     private final Expression<T> a;
     private final Collection<Expression<T>> collection;
+    private final Collection<T> collectionValues;
 
-    public InExpression(Expression<T> a, Collection<Expression<T>> collection, OPTION... options) {
+    public InExpression(Expression<T> a, Collection<T> collectionValues, OPTION... options) {
         super(options);
         checkExpressionType(a);
         this.a = a;
-        this.collection = collection;
+        this.collectionValues = collectionValues;
+        this.collection = collectionValues.stream().map(Constant::new).collect(Collectors.toList());
     }
 
     @Override
@@ -22,36 +25,33 @@ public abstract class InExpression<T> extends BooleanExpression {
         return OPTION.union(super.availableOptions(), new OPTION[]{IGNORE_CASE});
     }
 
-    private <C,V> T getA(C container, ValueGetter<C,V> valueGetter) {
+    public Expression<T> getA() {
+        return a;
+    }
+
+    public <C,V> T getAValue(C container, ValueGetter<C,V> valueGetter) {
         T res = a.result(container, valueGetter);
-        if (optionsContain(IGNORE_CASE)) {
-            res = (T) ((String)res).toLowerCase();
-        }
         return res;
     }
 
-    private <C, V> Collection<T> getCollection(C container, ValueGetter<C, V> valueGetter) {
-        Collection<T> res = new ArrayList<>();
-        for (Expression<T> e : collection) {
-            T ci = e.result(container, valueGetter);
-            if (optionsContain(IGNORE_CASE)) {
-                ci = (T) ((String)ci).toLowerCase();
-            }
-            res.add(ci);
-        }
-        return res;
+    public Collection<T> getCollectionValues() {
+        return collectionValues;
     }
 
     public class IN<I> extends InExpression<I> {
 
-        public IN(Expression<I> a, Collection<Expression<I>> collection, OPTION... options) {
-            super(a, collection, options);
+        public IN(Expression<I> a, Collection<I> collectionValues, OPTION... options) {
+            super(a, collectionValues, options);
         }
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            T aValue = getA(container, valueGetter);
-            Collection<T> c = getCollection(container, valueGetter);
+            T aValue = (T) getA().result(container, valueGetter);
+            Collection<T> c = (Collection<T>) getCollectionValues();
+            if (optionsContain(IGNORE_CASE)) {
+                aValue = (T) ((String)aValue).toLowerCase();
+                c = (Collection<T>) c.stream().map(v -> ((String)v).toLowerCase()).collect(Collectors.toList());
+            }
             return c.contains(aValue);
         }
     }

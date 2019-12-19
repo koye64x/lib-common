@@ -13,4 +13,8 @@ public class Constant<T> implements Expression<T> {
         return constantValue;
     }
 
+    public T getConstantValue() {
+        return constantValue;
+    }
+
 }

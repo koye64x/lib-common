@@ -1,6 +1,7 @@
 package koye.lib.expression;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,10 @@ public abstract class LogicalExpression extends BooleanExpression {
         }
         this.items = new LinkedList<>();
         items.addAll(Arrays.asList(expressions));
+    }
+
+    public List<BooleanExpression> getItems() {
+        return Collections.unmodifiableList(items);
     }
 
     public LogicalExpression add(BooleanExpression expression) {
@@ -53,6 +58,10 @@ public abstract class LogicalExpression extends BooleanExpression {
 
         public NOT(BooleanExpression expression) {
             this.expression = expression;
+        }
+
+        public BooleanExpression getExpression() {
+            return expression;
         }
 
         @Override

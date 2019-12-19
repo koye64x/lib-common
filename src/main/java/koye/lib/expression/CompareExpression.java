@@ -19,6 +19,14 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
         return OPTION.union(super.availableOptions(), new OPTION[]{IGNORE_CASE});
     }
 
+    public Expression<T> getA() {
+        return a;
+    }
+
+    public Expression<T> getB() {
+        return b;
+    }
+
     private <C, V> int compareResult(C container, ValueGetter<C, V> valueGetter) {
         T a = this.a.result(container, valueGetter);
         T b = this.b.result(container, valueGetter);
@@ -104,6 +112,18 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
             this.a = a;
             this.b = b;
             this.c = c;
+        }
+
+        public Expression<T> getA() {
+            return a;
+        }
+
+        public Expression<T> getB() {
+            return b;
+        }
+
+        public Expression<T> getC() {
+            return c;
         }
 
         @Override

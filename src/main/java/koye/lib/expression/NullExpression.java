@@ -2,22 +2,26 @@ package koye.lib.expression;
 
 public abstract class NullExpression extends BooleanExpression {
 
-    private final Expression a;
+    private final Path path;
 
-    public NullExpression(Expression a, OPTION... options) {
+    public NullExpression(Path path, OPTION... options) {
         super(options);
-        this.a = a;
+        this.path = path;
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     public class IS_NULL extends NullExpression {
 
-        public IS_NULL(Expression a) {
+        public IS_NULL(Path a) {
             super(a);
         }
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return a.result(container, valueGetter) == null;
+            return path.result(container, valueGetter) == null;
         }
 
     }

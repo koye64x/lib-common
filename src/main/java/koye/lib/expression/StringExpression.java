@@ -5,16 +5,22 @@ import static koye.lib.expression.OPTION.IGNORE_CASE;
 public abstract class StringExpression extends BooleanExpression {
 
     private final Expression<String> a;
-    private final Expression<String> b;
-
-    public StringExpression(Expression<String> a, Expression<String> b, OPTION... options) {
-        super(options);
-        this.a = a;
-        this.b = b;
-    }
+    private final String bValue;
+    private final Constant<String> b;
 
     public StringExpression(Expression<String> a, String bValue, OPTION... options) {
-        this(a, new Constant<>(bValue), options);
+        super(options);
+        this.a = a;
+        this.bValue = bValue;
+        this.b = new Constant<>(bValue);
+    }
+
+    public Expression<String> getA() {
+        return a;
+    }
+
+    public String getBValue() {
+        return bValue;
     }
 
     @Override
@@ -23,10 +29,6 @@ public abstract class StringExpression extends BooleanExpression {
     }
 
     public class START_WITH extends StringExpression {
-
-        public START_WITH(Expression<String> a, Expression<String> b, OPTION... options) {
-            super(a, b, options);
-        }
 
         public START_WITH(Expression<String> a, String bValue, OPTION... options) {
             super(a, bValue, options);
@@ -45,10 +47,6 @@ public abstract class StringExpression extends BooleanExpression {
 
     public class END_WITH extends StringExpression {
 
-        public END_WITH(Expression<String> a, Expression<String> b, OPTION... options) {
-            super(a, b, options);
-        }
-
         public END_WITH(Expression<String> a, String bValue, OPTION... options) {
             super(a, bValue, options);
         }
@@ -65,10 +63,6 @@ public abstract class StringExpression extends BooleanExpression {
     }
 
     public class CONTAIN extends StringExpression {
-
-        public CONTAIN(Expression<String> a, Expression<String> b, OPTION... options) {
-            super(a, b, options);
-        }
 
         public CONTAIN(Expression<String> a, String bValue, OPTION... options) {
             super(a, bValue, options);
