@@ -48,6 +48,11 @@ public class ReflectUtils {
         return (Class<?>) pt.getActualTypeArguments()[0];
     }
 
+    public static Class<?> getClassGenericType(Class<?> type) {
+        ParameterizedType pt = (ParameterizedType) type.getGenericSuperclass();
+        return (Class<?>) pt.getActualTypeArguments()[0];
+    }
+
     public static Field findField(Class<?> type, String fieldName) {
         if (type == null || type == Object.class) {
             return null;
