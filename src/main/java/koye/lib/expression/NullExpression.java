@@ -13,7 +13,7 @@ public abstract class NullExpression extends BooleanExpression {
         return path;
     }
 
-    public class IS_NULL extends NullExpression {
+    public static class IS_NULL extends NullExpression {
 
         public IS_NULL(Path a) {
             super(a);
@@ -21,7 +21,7 @@ public abstract class NullExpression extends BooleanExpression {
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return path.result(container, valueGetter) == null;
+            return getPath().result(container, valueGetter) == null;
         }
 
     }

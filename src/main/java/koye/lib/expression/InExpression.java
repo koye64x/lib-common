@@ -38,7 +38,7 @@ public abstract class InExpression<T> extends BooleanExpression {
         return collectionValues;
     }
 
-    public class IN<I> extends InExpression<I> {
+    public static class IN<I> extends InExpression<I> {
 
         public IN(Expression<I> a, Collection<I> collectionValues, OPTION... options) {
             super(a, collectionValues, options);
@@ -46,11 +46,11 @@ public abstract class InExpression<T> extends BooleanExpression {
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            T aValue = (T) getA().result(container, valueGetter);
-            Collection<T> c = (Collection<T>) getCollectionValues();
+            Object aValue = getA().result(container, valueGetter);
+            Collection c = getCollectionValues();
             if (optionsContain(IGNORE_CASE)) {
-                aValue = (T) ((String)aValue).toLowerCase();
-                c = (Collection<T>) c.stream().map(v -> ((String)v).toLowerCase()).collect(Collectors.toList());
+                aValue = ((String)aValue).toLowerCase();
+                c = (Collection) c.stream().map(v -> ((String)v).toLowerCase()).collect(Collectors.toList());
             }
             return c.contains(aValue);
         }

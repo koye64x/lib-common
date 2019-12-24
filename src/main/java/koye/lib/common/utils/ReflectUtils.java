@@ -1,10 +1,14 @@
 package koye.lib.common.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
+import javax.persistence.ManyToOne;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReflectUtils {
 
@@ -63,6 +67,50 @@ public class ReflectUtils {
             }
         }
         return findField(type.getSuperclass(), fieldName);
+    }
+
+    private static Method getGetterMethod(Class<?> aClass, String fieldName) throws IntrospectionException {
+        PropertyDescriptor pd = new PropertyDescriptor(fieldName, aClass);
+        return pd.getReadMethod();
+    }
+
+    public static <T extends Annotation> List<Field> getFieldsByPropAnnotation(Class<?> entityClass, Class<T> annotation) {
+        return getDeclaredInheritedFields(entityClass).stream().filter(f -> getPropAnnotation(entityClass, f.getName(), annotation) != null)
+                .collect(Collectors.toList());
+    }
+
+    public static <T extends Annotation> T getPropAnnotation(Class<?> objectClass, String fieldName, Class<T> annotationClass) {
+        Field f = findField(objectClass, fieldName);
+        assert f != null;
+        T res = f.getAnnotation(annotationClass);
+        if (res == null) {
+            Method m;
+            try {
+                m = getGetterMethod(objectClass, fieldName);
+                res = m.getAnnotation(annotationClass);
+            } catch (IntrospectionException e) {
+                e.printStackTrace();
+            }
+        }
+        return res;
+    }
+
+    public static <T> Class<?> getPropEntityClass(Class<T> entityClass, String fieldName) {
+        Field field = findField(entityClass, fieldName);
+        if (Collection.class.isAssignableFrom(field.getType())) {
+            return getFieldGenericType(field);
+        } else {
+            return field.getType();
+        }
+    }
+
+    public static Object getFieldValueByGetter(Object o, String propName) {
+        try {
+            Method m = getGetterMethod(o.getClass(), propName);
+            return m.invoke(o);
+        } catch (IllegalAccessException | InvocationTargetException | IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

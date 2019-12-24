@@ -26,11 +26,15 @@ public abstract class LogicalExpression extends BooleanExpression {
         return this;
     }
 
-    public class AND extends LogicalExpression {
+    public static class AND extends LogicalExpression {
+
+        public AND(BooleanExpression... expressions) {
+            super(expressions);
+        }
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            for (BooleanExpression item : items) {
+            for (BooleanExpression item : getItems()) {
                 if (!item.result(container, valueGetter)) {
                     return false;
                 }
@@ -39,11 +43,15 @@ public abstract class LogicalExpression extends BooleanExpression {
         }
     }
 
-    public class OR extends LogicalExpression {
+    public static class OR extends LogicalExpression {
+
+        public OR(BooleanExpression... expressions) {
+            super(expressions);
+        }
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            for (BooleanExpression item : items) {
+            for (BooleanExpression item : getItems()) {
                 if (item.result(container, valueGetter)) {
                     return true;
                 }
@@ -52,7 +60,7 @@ public abstract class LogicalExpression extends BooleanExpression {
         }
     }
 
-    public class NOT extends BooleanExpression {
+    public static class NOT extends BooleanExpression {
 
         private final BooleanExpression expression;
 

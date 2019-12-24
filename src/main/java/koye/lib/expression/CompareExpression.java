@@ -37,7 +37,7 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
         }
     }
 
-    public class EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
+    public static class EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
 
         public EQUAL(Expression<T> a, Expression<T> b, OPTION... options) {
             super(a, b, options);
@@ -45,12 +45,12 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return compareResult(container, valueGetter) == 0;
+            return super.compareResult(container, valueGetter) == 0;
         }
 
     }
 
-    public class GREAT<T extends Comparable<T>> extends CompareExpression<T> {
+    public static class GREAT<T extends Comparable<T>> extends CompareExpression<T> {
 
         public GREAT(Expression<T> a, Expression<T> b, OPTION... options) {
             super(a, b, options);
@@ -58,12 +58,12 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return compareResult(container, valueGetter) > 0;
+            return super.compareResult(container, valueGetter) > 0;
         }
 
     }
 
-    public class GREAT_OR_EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
+    public static class GREAT_OR_EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
 
         public GREAT_OR_EQUAL(Expression<T> a, Expression<T> b, OPTION... options) {
             super(a, b, options);
@@ -71,12 +71,12 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return compareResult(container, valueGetter) >= 0;
+            return super.compareResult(container, valueGetter) >= 0;
         }
 
     }
 
-    public class LESS<T extends Comparable<T>> extends CompareExpression<T> {
+    public static class LESS<T extends Comparable<T>> extends CompareExpression<T> {
 
         public LESS(Expression<T> a, Expression<T> b, OPTION... options) {
             super(a, b, options);
@@ -84,11 +84,11 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return compareResult(container, valueGetter) < 0;
+            return super.compareResult(container, valueGetter) < 0;
         }
     }
 
-    public class LESS_OR_EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
+    public static class LESS_OR_EQUAL<T extends Comparable<T>> extends CompareExpression<T> {
 
         public LESS_OR_EQUAL(Expression<T> a, Expression<T> b, OPTION... options) {
             super(a, b, options);
@@ -96,11 +96,11 @@ public abstract class CompareExpression<T extends Comparable<T>> extends Boolean
 
         @Override
         public <C, V> Boolean operationResult(C container, ValueGetter<C, V> valueGetter) {
-            return compareResult(container, valueGetter) <= 0;
+            return super.compareResult(container, valueGetter) <= 0;
         }
     }
 
-    public class BETWEEN<T extends Comparable<T>> extends BooleanExpression {
+    public static class BETWEEN<T extends Comparable<T>> extends BooleanExpression {
 
         private final Expression<T> a;
         private final Expression<T> b;

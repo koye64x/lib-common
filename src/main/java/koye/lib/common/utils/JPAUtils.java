@@ -1,5 +1,6 @@
 package koye.lib.common.utils;
 
+import koye.lib.common.meta.FetchSchema;
 import koye.lib.expression.*;
 import koye.lib.expression.CompareExpression.EQUAL;
 import koye.lib.expression.CompareExpression.GREAT;
@@ -16,14 +17,14 @@ import koye.lib.expression.StringExpression.START_WITH;
 import koye.lib.expression.StringExpression.END_WITH;
 import koye.lib.expression.StringExpression.CONTAIN;
 
+import javax.persistence.EntityGraph;
+import javax.persistence.EntityManager;
+import javax.persistence.Subgraph;
 import javax.persistence.criteria.*;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static koye.lib.expression.OPTION.IGNORE_CASE;
@@ -174,4 +175,59 @@ public class JPAUtils {
             throw new IllegalArgumentException("No implementation for operation " + expression.getClass().getSimpleName());
         }
     }
+
+    public static <T> EntityGraph<T> getEntityGraph(EntityManager em, Class<T> entityClass, FetchSchema fetchSchema) {
+        EntityGraph<T> res = em.createEntityGraph(entityClass);
+        for (Map.Entry<String, FetchSchema> e : fetchSchema.entrySet()) {
+            if (e.getValue() == null) {
+                res.addAttributeNodes(e.getKey());
+            } else {
+                Class<?> propClass = ReflectUtils.getPropEntityClass(entityClass, e.getKey());
+                addSubGraph(res, propClass, e.getKey(), e.getValue());
+            }
+        }
+        return res;
+    }
+
+    private static <T, P> void addSubGraph(EntityGraph<T> graph, Class<P> propClass, String fieldName, FetchSchema fetchSchema) {
+        Subgraph<P> subgraph = graph.addSubgraph(fieldName);
+        for (Map.Entry<String, FetchSchema> e : fetchSchema.entrySet()) {
+            if (e.getValue() == null) {
+                subgraph.addAttributeNodes(e.getKey());
+            } else {
+                Class<?> subPropClass = ReflectUtils.getPropEntityClass(propClass, e.getKey());
+                addSubGraph(subgraph, subPropClass, e.getKey(), e.getValue());
+            }
+
+        }
+    }
+
+    private static <T, P> void addSubGraph(Subgraph<T> graph, Class<P> propClass, String fieldName, FetchSchema fetchSchema) {
+        Subgraph<P> subgraph = graph.addSubgraph(fieldName);
+        for (Map.Entry<String, FetchSchema> e : fetchSchema.entrySet()) {
+            if (e.getValue() == null) {
+                subgraph.addAttributeNodes(e.getKey());
+            } else {
+                Class<?> subPropClass = ReflectUtils.getPropEntityClass(propClass, e.getKey());
+                addSubGraph(subgraph, subPropClass, e.getKey(), e.getValue());
+            }
+        }
+    }
+
+    public static Map<String, Object> toMap(Object entity, FetchSchema fetchSchema) {
+        Map<String, Object> res = new HashMap<>();
+        for (Field field : Objects.requireNonNull(ReflectUtils.getDeclaredInheritedFields(entity.getClass()))) {
+            if (ReflectUtils.isPrimitiveType(field.getType())) {
+                res.put(field.getName(), ReflectUtils.getFieldValueByGetter(entity, field.getName()));
+            }
+        }
+        if (fetchSchema != null) {
+            for (Map.Entry<String, FetchSchema> e : fetchSchema.entrySet()) {
+                Object propValue = ReflectUtils.getFieldValueByGetter(entity, e.getKey());
+                res.put(e.getKey(), toMap(propValue, e.getValue()));
+            }
+        }
+        return res;
+    }
+
 }
