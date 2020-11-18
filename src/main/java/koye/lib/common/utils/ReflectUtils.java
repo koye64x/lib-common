@@ -1,6 +1,5 @@
 package koye.lib.common.utils;
 
-import javax.persistence.ManyToOne;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -25,7 +24,9 @@ public class ReflectUtils {
             }
 
             for (Field f: objectClass.getDeclaredFields()) {
-                if (!Modifier.isStatic(f.getModifiers())) {
+                if (!Modifier.isStatic(f.getModifiers())
+                    && !Modifier.isStatic(f.getModifiers())
+                        && !Modifier.isFinal(f.getModifiers())) {
                     list.add(f);
                 }
             }
