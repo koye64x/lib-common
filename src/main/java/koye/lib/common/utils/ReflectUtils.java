@@ -114,4 +114,24 @@ public class ReflectUtils {
         }
     }
 
+    public static Field getField(Class<?> objectClass, String fieldName) throws NoSuchFieldException {
+        Field field = findField(objectClass, fieldName);
+        if (field == null) {
+            throw new NoSuchFieldException(String.format("Field '%s' not found in class '%s'",
+                    fieldName, objectClass.getName()));
+        } else {
+            return field;
+        }
+    }
+
+    public static void setValue(Object object, String fieldName, Object value) throws NoSuchFieldException {
+        Field field = getField(object.getClass(), fieldName);
+        field.setAccessible(true);
+        try {
+            field.set(object, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
